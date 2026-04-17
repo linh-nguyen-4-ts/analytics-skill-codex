@@ -1,0 +1,4 @@
+interface:
+  display_name: "BigQuery Data Adapter"
+  short_description: "BigQuery schema and query adapter"
+  default_prompt: "Use $data-adapter-bigquery to verify BigQuery access, inspect schema, preview tables, and run evidence-based SQL queries."

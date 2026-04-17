@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Context Template"
+  short_description: "Template for product KPI and data rules"
+  default_prompt: "Use $product-context-template to capture entities, lifecycle stages, KPI rules, source-of-truth tables, and known data caveats for a product domain."

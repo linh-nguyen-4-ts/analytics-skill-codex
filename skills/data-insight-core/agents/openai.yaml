@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Insight Core"
+  short_description: "Database analysis workflow with validation"
+  default_prompt: "Use $data-insight-core to explore a new database, confirm business meaning, validate metrics, and produce an insight report with clear assumptions and confidence."
