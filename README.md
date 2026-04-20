@@ -2,11 +2,12 @@
 
 Codex skill bundle for data insight work on unfamiliar databases.
 
-This repo packages four skills that work together:
+This repo packages five skills that work together:
 
 - `data-insight-core`: database-agnostic workflow for intake, schema exploration, validation, and reporting
 - `data-adapter-bigquery`: BigQuery adapter for access checks, schema discovery, previews, and SQL execution
 - `data-adapter-local-tabular`: local CSV and XLSX adapter for file inspection, previews, profiling, and SQL execution
+- `data-adapter-postgresql`: PostgreSQL adapter for schemas, tables, previews, profiling, and SQL execution
 - `product-context-template`: template for capturing product entities, lifecycle rules, KPI definitions, source-of-truth tables, and known data caveats
 
 ## Repo Structure
@@ -16,6 +17,7 @@ skills/
   data-insight-core/
   data-adapter-bigquery/
   data-adapter-local-tabular/
+  data-adapter-postgresql/
   product-context-template/
 ```
 
@@ -51,6 +53,14 @@ python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-local-tabular/scripts/l
 python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-local-tabular/scripts/local_tabular_adapter.py" inspect './workbook.xlsx#Sheet1'
 ```
 
+For PostgreSQL:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-postgresql/scripts/postgres_adapter.py" setup
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-postgresql/scripts/postgres_adapter.py" test
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-postgresql/scripts/postgres_adapter.py" schemas
+```
+
 3. Pick one real use case instead of trying to model the whole product at once.
    Example: approval funnel for the last 14 days.
 4. Create a real product context by copying the template:
@@ -68,7 +78,7 @@ cp -R "${CODEX_HOME:-$HOME/.codex}/skills/product-context-template" \
 Use the skills together like this:
 
 1. `$data-insight-core` to frame the business question and validation approach
-2. one source adapter such as `$data-adapter-bigquery` or `$data-adapter-local-tabular`
+2. one source adapter such as `$data-adapter-bigquery`, `$data-adapter-local-tabular`, or `$data-adapter-postgresql`
 3. your copied product context skill such as `$dop-context` to define entities, lifecycle, KPI rules, and caveats
 
 The key principle is:
@@ -108,10 +118,19 @@ Inspect ./daily-onboarding.xlsx#Raw Data, confirm the inferred header and types,
 Call out any spreadsheet-specific caveats before concluding.
 ```
 
+Analyze a PostgreSQL table:
+
+```text
+Use $data-insight-core and $data-adapter-postgresql.
+Inspect the relevant schemas first, confirm the table grain for public.orders, and analyze the order success funnel for the latest 30 days.
+Call out any timezone, soft-delete, or history-table caveats before concluding.
+```
+
 ## Included Helpers
 
 - `skills/data-adapter-bigquery/scripts/bq_adapter.py`: setup, access test, datasets, tables, schema, preview, query
 - `skills/data-adapter-local-tabular/scripts/local_tabular_adapter.py`: inspect, describe, preview, profile, query for local CSV and XLSX files
+- `skills/data-adapter-postgresql/scripts/postgres_adapter.py`: setup, access test, schemas, tables, describe, preview, profile, query
 - `skills/data-insight-core/scripts/render_report.py`: turn structured findings in JSON into a markdown report
 
 ## Local Validation
@@ -120,6 +139,7 @@ Call out any spreadsheet-specific caveats before concluding.
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/data-insight-core
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/data-adapter-bigquery
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/data-adapter-local-tabular
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/data-adapter-postgresql
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/product-context-template
 ```
 
@@ -127,5 +147,6 @@ python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/p
 
 - `data-adapter-bigquery` expects `google-cloud-bigquery`.
 - `data-adapter-local-tabular` expects `duckdb` and `openpyxl`.
+- `data-adapter-postgresql` expects `psycopg[binary]`.
 - `quick_validate.py` expects `PyYAML`.
 - Do not commit local `.env` files with credentials.

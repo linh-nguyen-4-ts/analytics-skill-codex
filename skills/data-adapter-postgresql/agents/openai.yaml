@@ -1,0 +1,4 @@
+interface:
+  display_name: "PostgreSQL Data Adapter"
+  short_description: "PostgreSQL schema and query adapter"
+  default_prompt: "Use $data-adapter-postgresql to verify PostgreSQL access, inspect schemas and tables, preview rows, profile tables, and run evidence-based SQL queries."
