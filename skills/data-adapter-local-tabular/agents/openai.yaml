@@ -1,0 +1,4 @@
+interface:
+  display_name: "Local Tabular Adapter"
+  short_description: "CSV and XLSX schema and query adapter"
+  default_prompt: "Use $data-adapter-local-tabular to inspect local CSV or XLSX files, preview rows, profile columns, and run SQL against the selected source."

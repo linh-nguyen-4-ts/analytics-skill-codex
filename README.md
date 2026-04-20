@@ -2,10 +2,11 @@
 
 Codex skill bundle for data insight work on unfamiliar databases.
 
-This repo packages three skills that work together:
+This repo packages four skills that work together:
 
 - `data-insight-core`: database-agnostic workflow for intake, schema exploration, validation, and reporting
 - `data-adapter-bigquery`: BigQuery adapter for access checks, schema discovery, previews, and SQL execution
+- `data-adapter-local-tabular`: local CSV and XLSX adapter for file inspection, previews, profiling, and SQL execution
 - `product-context-template`: template for capturing product entities, lifecycle rules, KPI definitions, source-of-truth tables, and known data caveats
 
 ## Repo Structure
@@ -14,6 +15,7 @@ This repo packages three skills that work together:
 skills/
   data-insight-core/
   data-adapter-bigquery/
+  data-adapter-local-tabular/
   product-context-template/
 ```
 
@@ -35,11 +37,18 @@ python3 -m pip install --user -r requirements.txt
 ## New User Quickstart
 
 1. Install the skills into `~/.codex/skills`.
-2. If you will use BigQuery, configure the adapter:
+2. Choose the adapter that matches your source:
 
 ```bash
 python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-bigquery/scripts/bq_adapter.py" setup
 python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-bigquery/scripts/bq_adapter.py" test
+```
+
+For local files:
+
+```bash
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-local-tabular/scripts/local_tabular_adapter.py" inspect ./report.csv
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/data-adapter-local-tabular/scripts/local_tabular_adapter.py" inspect './workbook.xlsx#Sheet1'
 ```
 
 3. Pick one real use case instead of trying to model the whole product at once.
@@ -56,11 +65,11 @@ cp -R "${CODEX_HOME:-$HOME/.codex}/skills/product-context-template" \
 
 ## Recommended Workflow
 
-Use the three skills together:
+Use the skills together like this:
 
 1. `$data-insight-core` to frame the business question and validation approach
-2. `$data-adapter-bigquery` to inspect schema and query the data
-3. Your copied product context skill such as `$dop-context` to define entities, lifecycle, KPI rules, and caveats
+2. one source adapter such as `$data-adapter-bigquery` or `$data-adapter-local-tabular`
+3. your copied product context skill such as `$dop-context` to define entities, lifecycle, KPI rules, and caveats
 
 The key principle is:
 
@@ -91,9 +100,18 @@ Analyze the DOP onboarding approval funnel for the last 14 days.
 Validate the counting rule, state assumptions explicitly, and reconcile against any known source-of-truth number.
 ```
 
+Analyze a local spreadsheet:
+
+```text
+Use $data-insight-core and $data-adapter-local-tabular.
+Inspect ./daily-onboarding.xlsx#Raw Data, confirm the inferred header and types, and analyze the approval funnel for the latest available data.
+Call out any spreadsheet-specific caveats before concluding.
+```
+
 ## Included Helpers
 
 - `skills/data-adapter-bigquery/scripts/bq_adapter.py`: setup, access test, datasets, tables, schema, preview, query
+- `skills/data-adapter-local-tabular/scripts/local_tabular_adapter.py`: inspect, describe, preview, profile, query for local CSV and XLSX files
 - `skills/data-insight-core/scripts/render_report.py`: turn structured findings in JSON into a markdown report
 
 ## Local Validation
@@ -101,11 +119,13 @@ Validate the counting rule, state assumptions explicitly, and reconcile against 
 ```bash
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/data-insight-core
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/data-adapter-bigquery
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/data-adapter-local-tabular
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/product-context-template
 ```
 
 ## Notes
 
 - `data-adapter-bigquery` expects `google-cloud-bigquery`.
+- `data-adapter-local-tabular` expects `duckdb` and `openpyxl`.
 - `quick_validate.py` expects `PyYAML`.
 - Do not commit local `.env` files with credentials.
